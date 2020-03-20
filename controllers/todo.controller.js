@@ -1,9 +1,5 @@
 const Todo = require("../models/todo.model");
 
-exports.test = function(req, res) {
-  res.send("Greetings from the Test controller!");
-};
-
 exports.todo_create = function(req, res) {
   let todo = new Todo({
     text: req.body.text,
@@ -43,8 +39,6 @@ exports.todo_update = function(req, res) {
 
 exports.todo_updateMany = function(req, res) {
   const isCompleted = req.body.isCompleted;
-  console.log(typeof isCompleted);
-
   Todo.updateMany(
     { isCompleted: !isCompleted },
     { $set: { isCompleted: isCompleted } },
@@ -57,6 +51,14 @@ exports.todo_updateMany = function(req, res) {
 
 exports.todo_delete = function(req, res) {
   Todo.findByIdAndRemove(req.params.id, function(err) {
+    if (err) return next(err);
+    res.send("Deleted successfully!");
+  });
+};
+
+exports.todo_deleteMany = function(req, res) {
+  const ids = req.params.ids.split(",");
+  Todo.deleteMany({ _id: { $in: ids}}, function(err) {
     if (err) return next(err);
     res.send("Deleted successfully!");
   });
