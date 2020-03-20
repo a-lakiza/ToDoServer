@@ -8,5 +8,5 @@ router.post("/create", todo_controller.todo_create);
 router.put("/:id/update", todo_controller.todo_update);
 router.put("/updateMany", todo_controller.todo_updateMany);
 router.delete("/:id/delete", todo_controller.todo_delete);
-router.delete("/deleteMany/:ids", todo_controller.todo_deleteMany);
+router.delete("/deleteCompleted", todo_controller.todo_deleteCompleted);
 module.exports = router;

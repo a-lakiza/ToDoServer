@@ -56,10 +56,9 @@ exports.todo_delete = function(req, res) {
   });
 };
 
-exports.todo_deleteMany = function(req, res) {
-  const ids = req.params.ids.split(",");
-  Todo.deleteMany({ _id: { $in: ids}}, function(err) {
+exports.todo_deleteCompleted = function(req, res) {
+  Todo.deleteMany({ isCompleted: true }, function(err, response) {
     if (err) return next(err);
-    res.send("Deleted successfully!");
+    res.send(response);
   });
 };

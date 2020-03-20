@@ -3,10 +3,10 @@ const bodyParser = require("body-parser");
 const todo = require("./routes/todo.route");
 const app = express();
 const mongoose = require("mongoose");
-let dev_db_url = "mongodb://localhost:27017/ProjectDB";
+const dev_db_url = "mongodb://localhost:27017/ProjectDB";
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 const db = mongoose.connection;
-let port = 2000;
+const port = 2000;
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
