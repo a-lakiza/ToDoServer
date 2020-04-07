@@ -1,64 +1,97 @@
-const Todo = require("../models/todo.model");
+const TodoModel = require("../models/todo.model");
 
-exports.todo_create = function(req, res) {
-  let todo = new Todo({
-    text: req.body.text,
-    isCompleted: req.body.isCompleted
-  });
-  todo.save(function(err, todo) {
-    if (err) {
-      return next(err);
+exports.createTodo = async (req, res, next) => {
+  try {
+    const createdModel = await TodoModel.create(req.body);
+    res.status(201).json(createdModel);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getTodoById = async (req, res, next) => {
+  try {
+    const todoModel = await TodoModel.findById(req.params.id);
+    if (todoModel) {
+      res.status(200).json(todoModel);
+    } else {
+      res.status(404).send();
     }
-    res.send(todo);
-  });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.todo_details = function(req, res) {
-  Todo.findById(req.params.id, function(err, todo) {
-    if (err) return next(err);
-    res.send(todo);
-  });
+exports.getTodos = async (req, res, next) => {
+  try {
+    const allTodos = await TodoModel.find({});
+    res.status(200).json(allTodos);
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.todo_all = function(req, res) {
-  Todo.find({}, function(err, todos) {
-    if (err) return next(err);
-    res.send(todos);
-  });
+exports.updateTodo = async (req, res, next) => {
+  try {
+    const updatedTodo = await TodoModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        useFindAndModify: false
+      }
+    );
+    if (updatedTodo) {
+      res.status(200).json(updatedTodo);
+    } else {
+      res.status(404).send();
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.todo_update = function(req, res) {
-  Todo.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
-    err,
-    todo
-  ) {
-    if (err) return next(err);
-    res.send(todo);
-  });
-};
-
-exports.todo_updateMany = function(req, res) {
+exports.updateMany = async (req, res, next) => {
   const isCompleted = req.body.isCompleted;
-  Todo.updateMany(
-    { isCompleted: !isCompleted },
-    { $set: { isCompleted: isCompleted } },
-    function(err) {
-      if (err) return next(err);
-      res.send("Deleted successfully!");
+  try {
+    const updatedTodos = await TodoModel.updateMany(
+      { isCompleted: !isCompleted },
+      { $set: { isCompleted: isCompleted } }
+    );
+    if (updatedTodos) {
+      res.status(200).json(updatedTodos);
+    } else {
+      res.status(404).send();
     }
-  );
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.todo_delete = function(req, res) {
-  Todo.findByIdAndRemove(req.params.id, function(err) {
-    if (err) return next(err);
-    res.send("Deleted successfully!");
-  });
+exports.deleteTodo = async (req, res, next) => {
+  try {
+    const deletedTodo = await TodoModel.findByIdAndDelete(req.params.id);
+
+    if (deletedTodo) {
+      res.status(200).json(deletedTodo);
+    } else {
+      res.status(404).send();
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.todo_deleteCompleted = function(req, res) {
-  Todo.deleteMany({ isCompleted: true }, function(err, response) {
-    if (err) return next(err);
-    res.send(response);
-  });
+exports.deleteCompletedTodos = async (req, res, next) => {
+  try {
+    const deletedTodos = await TodoModel.deleteMany({ isCompleted: true }
+    );
+    if (deletedTodos) {
+      res.status(200).json(deletedTodos);
+    } else {
+      res.status(404).send();
+    }
+  } catch (err) {
+    next(err);
+  }
 };

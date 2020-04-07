@@ -20,6 +20,5 @@ mongoose.set("useUnifiedTopology", true);
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
-app.listen(port, () => {
-  console.log("Server is up and running on port numner " + port);
-});
+
+module.exports = app;
