@@ -4,6 +4,8 @@ const user_controller = require("../controllers/user.controller");
 
 router.post("/register", user_controller.register);
 router.post("/login", user_controller.login);
+router.get("/google/login", user_controller.googleAuth);
+router.get("/google/callback", user_controller.googleAuthCallback);
 
 module.exports = router;
  

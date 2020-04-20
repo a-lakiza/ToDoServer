@@ -70,3 +70,31 @@ exports.login = async (req, res, next) => {
         });
     });
 }
+
+exports.googleAuth = (req, res) => {
+    passport.authenticate('google', { scope: ['email', 'profile'] })(req, res);
+}
+
+exports.googleAuthCallback = (req, res, next) => {
+    passport.authenticate('google', function (err, user) {
+
+        if (err) {
+        } else {
+            const payload = {
+                id: user._id,
+                name: user.name
+            };
+            jwt.sign(
+                payload,
+                keys.secretOrKey,
+                {
+                    expiresIn: 31556926
+                },
+                (err, token) => {
+                    res.redirect(`http://localhost:3000/?token=Bearer ${token}`);
+                }
+            );
+
+        }
+    })(req, res, next);
+}
