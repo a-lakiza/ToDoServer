@@ -6,10 +6,10 @@ const passport = require("passport");
 
 exports.register = async (req, res, next) => {
     try {
-        const userModel = await UserModel.findOne({ name: req.body.name })
+        const userModel = await UserModel.findOne({ email: req.body.email })
 
         if (userModel) {
-            res.status(400).json({ name: "Username already exists" }).send();
+            res.status(400).json({ name: "Email already exists" }).send();
         } else {
 
             let newUser = new UserModel({
@@ -77,6 +77,34 @@ exports.googleAuth = (req, res) => {
 
 exports.googleAuthCallback = (req, res, next) => {
     passport.authenticate('google', function (err, user) {
+
+        if (err) {
+        } else {
+            const payload = {
+                id: user._id,
+                name: user.name
+            };
+            jwt.sign(
+                payload,
+                keys.secretOrKey,
+                {
+                    expiresIn: 31556926
+                },
+                (err, token) => {
+                    res.redirect(`http://localhost:3000/?token=Bearer ${token}`);
+                }
+            );
+
+        }
+    })(req, res, next);
+}
+
+exports.facebookAuth = (req, res) => {
+    passport.authenticate('facebook')(req, res);
+}
+
+exports.facebookAuthCallback = (req, res, next) => {
+    passport.authenticate('facebook', function (err, user) {
 
         if (err) {
         } else {

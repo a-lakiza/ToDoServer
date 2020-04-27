@@ -1,5 +1,6 @@
 const JwtStrategy = require("passport-jwt").Strategy;
 const GoogleStrategy = require("passport-google-oauth2").Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const mongoose = require("mongoose");
 const UserModel = require('../models/user.model');
@@ -30,8 +31,30 @@ module.exports = passport => {
     passReqToCallback: true
   },
     function (request, accessToken, refreshToken, profile, done) {
-      console.log(12345);
 
+      UserModel.findOne({ googleID: profile.id })
+        .then((existingUser) => {
+          if (existingUser) {
+            done(null, existingUser)
+          } else {
+            new UserModel({
+              googleID: profile.id,
+              name: profile.displayName,
+            }).save()
+              .then((user) => {
+                done(null, user)
+              })
+          }
+        })
+    }
+  ));
+
+  passport.use(new FacebookStrategy({
+    clientID: "1052923758435168",
+    clientSecret: "11268e7b98c5a9582008d05b84a51dfe",
+    callbackURL: "http://localhost:2000/user/facebook/callback"
+  },
+    function (accessToken, refreshToken, profile, done) {
       UserModel.findOne({ googleID: profile.id })
         .then((existingUser) => {
           if (existingUser) {
